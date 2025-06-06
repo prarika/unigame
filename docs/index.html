@@ -1,73 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"> <!-- Ensure UTF-8 encoding  -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsive scaling  -->
-  <title>Unigame Space Showcase</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unigame 3D Space</title>
   <style>
-    /*----------------------------------------------------
-      1. Global Resets & CSS Variables
-    ----------------------------------------------------*/
     :root {
-      /* Canvas starfield settings */
-      --star-count: 300;
-      --star-speed: 2;
-      /* Logo colors */
-      --logo-color: #00f0ff;
-      --logo-accent: #ff66cc;
-      /* Background gradient for deep space */
-      --space-gradient-start: #0b0d17;
-      --space-gradient-end: #14212b;
+      --star-count: 1000;
+      --asteroid-count: 20;
     }
-
     * {
       margin: 0;
       padding: 0;
-      box-sizing: border-box; /* Simplify sizing  */
+      box-sizing: border-box;
     }
-
     html, body {
       width: 100%;
       height: 100%;
-      overflow: hidden; /* Prevent scrollbars  */
-      background: linear-gradient(
-        160deg,
-        var(--space-gradient-start),
-        var(--space-gradient-end)
-      );
+      overflow: hidden;
+      background-color: #0b0d17;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       color: white;
     }
-
-    /*----------------------------------------------------
-      2. Canvas Starfield Styles
-    ----------------------------------------------------*/
-    #starfield {
+    #space-canvas {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      z-index: -2; /* Behind all other content  [oai_citation:43‡cssscript.com](https://www.cssscript.com/interactive-star-field-background/?utm_source=chatgpt.com) */
-      display: block;
+      z-index: -3;
     }
-
-    /*----------------------------------------------------
-      3. Layered CSS 3D Stars
-    ----------------------------------------------------*/
-    .stars-3d {
+    .stars-parallax {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      perspective: 800px; /* Create 3D context  [oai_citation:44‡codepen.io](https://codepen.io/keithclark/pen/JjWyBb?utm_source=chatgpt.com) [oai_citation:45‡freefrontend.com](https://freefrontend.com/css-3d-examples/?utm_source=chatgpt.com) */
-      z-index: -1; /* Above canvas but behind logo  [oai_citation:46‡codepen.io](https://codepen.io/keithclark/pen/JjWyBb?utm_source=chatgpt.com) [oai_citation:47‡freefrontend.com](https://freefrontend.com/css-3d-examples/?utm_source=chatgpt.com) */
-      pointer-events: none; /* Let clicks pass through  [oai_citation:48‡codepen.io](https://codepen.io/keithclark/pen/JjWyBb?utm_source=chatgpt.com) [oai_citation:49‡jsfiddle.net](https://jsfiddle.net/s_light/02pftd9h/?utm_source=chatgpt.com) */
+      perspective: 800px;
+      z-index: -2;
+      overflow: hidden;
+      pointer-events: none;
     }
-
-    .star {
-      --size: 2px;
+    .star-parallax {
+      --size: calc(1px + (3 * var(--rand)));
       width: var(--size);
       height: var(--size);
       background: white;
@@ -75,51 +50,46 @@
       position: absolute;
       top: var(--y);
       left: var(--x);
-      transform: translate3d(-50%, -50%, var(--z)); /* Position in 3D space  [oai_citation:50‡codepen.io](https://codepen.io/keithclark/pen/JjWyBb?utm_source=chatgpt.com) [oai_citation:51‡freefrontend.com](https://freefrontend.com/css-3d-examples/?utm_source=chatgpt.com) */
-      animation: twinkle 4s infinite alternate ease-in-out; /* Star twinkling  [oai_citation:52‡freefrontend.com](https://freefrontend.com/css-3d-examples/?utm_source=chatgpt.com) */
+      transform: translate3d(-50%, -50%, var(--z));
+      animation: twinkle 4s infinite alternate ease-in-out;
       will-change: transform, opacity;
+      opacity: var(--rand-alpha);
     }
-
     @keyframes twinkle {
       from { opacity: 0.3; }
       to   { opacity: 1.0; }
     }
-
-    /*----------------------------------------------------
-      4. Logo Wrapper & Logo Styles
-    ----------------------------------------------------*/
     .logo-wrapper {
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%); /* Center on screen  [oai_citation:53‡github.com](https://github.com/AnnikaV9/starfield.js/?utm_source=chatgpt.com) */
-      perspective: 1000px; /* 3D perspective for logo children  [oai_citation:54‡github.com](https://github.com/AnnikaV9/starfield.js/?utm_source=chatgpt.com) [oai_citation:55‡jsfiddle.net](https://jsfiddle.net/s_light/02pftd9h/?utm_source=chatgpt.com) */
+      transform: translate(-50%, -50%);
+      perspective: 1000px;
       width: 600px;
       height: 120px;
       pointer-events: none;
+      z-index: 2;
+      text-align: center;
     }
-
     .logo {
       font-size: 100px;
       font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 0.2em;
-      color: var(--logo-color);
-      text-align: center;
-      transform-style: preserve-3d; /* Enable 3D rotations for children  [oai_citation:56‡github.com](https://github.com/AnnikaV9/starfield.js/?utm_source=chatgpt.com) [oai_citation:57‡codepen.io](https://codepen.io/keithclark/pen/JjWyBb?utm_source=chatgpt.com) */
+      color: #00f0ff;
+      transform-style: preserve-3d;
       transition: transform 0.2s ease-out;
       user-select: none;
-      pointer-events: auto; /* Allow hover on text  [oai_citation:58‡jsfiddle.net](https://jsfiddle.net/s_light/02pftd9h/?utm_source=chatgpt.com) */
+      pointer-events: auto;
       position: relative;
       line-height: 1;
       text-shadow:
-        0 0 10px var(--logo-color),
-        0 0 20px var(--logo-color),
-        0 0 30px var(--logo-accent),
-        0 0 40px var(--logo-accent),
-        0 0 60px var(--logo-accent); /* Multi-layer glow  [oai_citation:59‡kirupa.com](https://www.kirupa.com/animations/animated_3d_starfield_effect.htm?utm_source=chatgpt.com) */
+        0 0 10px #00f0ff,
+        0 0 20px #00f0ff,
+        0 0 30px #ff66cc,
+        0 0 40px #ff66cc,
+        0 0 60px #ff66cc;
     }
-
     .logo::before {
       content: 'Unigame';
       position: absolute;
@@ -129,18 +99,17 @@
       height: 100%;
       background: linear-gradient(
         to right,
-        var(--logo-color),
-        var(--logo-accent),
-        var(--logo-color)
+        #00f0ff,
+        #ff66cc,
+        #00f0ff
       );
       -webkit-background-clip: text;
       color: transparent;
-      filter: blur(8px); /* Soft glow behind  [oai_citation:60‡kirupa.com](https://www.kirupa.com/animations/animated_3d_starfield_effect.htm?utm_source=chatgpt.com) */
+      filter: blur(8px);
       opacity: 0.6;
       transform: translateZ(-50px) scale(1.1);
       z-index: -1;
     }
-
     @media (prefers-reduced-motion: reduce) {
       .logo:hover {
         transform: scale(1.05);
@@ -149,40 +118,23 @@
   </style>
 </head>
 <body>
-  <!------------------------------------------------------
-    A. Canvas for 3D Starfield
-  ------------------------------------------------------>
-  <canvas id="starfield"></canvas>
-
-  <!------------------------------------------------------
-    B. Layered CSS 3D Stars Container
-  ------------------------------------------------------>
-  <div class="stars-3d"></div>
-
-  <!------------------------------------------------------
-    C. Centered Unigame Logo
-  ------------------------------------------------------>
+  <canvas id="space-canvas"></canvas>
+  <div class="stars-parallax" id="stars-layer"></div>
   <div class="logo-wrapper">
     <div class="logo">Unigame</div>
   </div>
-
-  <!------------------------------------------------------
-    D. JavaScript: Starfield, CSS Star Population, Logo Interaction
-  ------------------------------------------------------>
   <script>
-    /*----------------------------------------------------
-      1. Canvas Setup & Star Class
-    ----------------------------------------------------*/
-    const canvas = document.getElementById('starfield');
+    const canvas = document.getElementById('space-canvas');
     const ctx = canvas.getContext('2d');
     let stars = [];
+    let asteroids = [];
 
-    function resizeCanvas() {
+    function resize() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas(); // Initial sizing  [oai_citation:61‡kirupa.com](https://www.kirupa.com/animations/animated_3d_starfield_effect.htm?utm_source=chatgpt.com)
+    window.addEventListener('resize', resize);
+    resize();
 
     class Star {
       constructor() {
@@ -191,93 +143,134 @@
       reset() {
         this.x = (Math.random() - 0.5) * canvas.width;
         this.y = (Math.random() - 0.5) * canvas.height;
-        this.z = Math.random() * canvas.width; /* Depth  [oai_citation:62‡github.com](https://github.com/mcgallag/starfield?utm_source=chatgpt.com) */
+        this.z = Math.random() * canvas.width;
       }
       update() {
-        this.z -= parseFloat(getComputedStyle(document.documentElement)
-                    .getPropertyValue('--star-speed')); /* Move toward viewer  [oai_citation:63‡divinectorweb.com](https://www.divinectorweb.com/2024/04/starfield-animation-vanilla-javascript.html?utm_source=chatgpt.com) */
+        this.z -= 4;
         if (this.z <= 0) this.reset();
       }
       draw() {
-        const f = 300 / this.z; /* Focal length projection  */
+        const f = 300 / this.z;
         const px = this.x * f + canvas.width / 2;
         const py = this.y * f + canvas.height / 2;
         const r = (1 - this.z / canvas.width) * 2;
         ctx.beginPath();
-        ctx.fillStyle = `rgba(255,255,255,${1 - this.z / canvas.width})`; /* Fade with depth  [oai_citation:64‡kirupa.com](https://www.kirupa.com/animations/animated_3d_starfield_effect.htm?utm_source=chatgpt.com) */
-        ctx.arc(px, py, r, 0, 2 * Math.PI);
+        ctx.fillStyle = `rgba(255,255,255,${1 - this.z / canvas.width})`;
+        ctx.arc(px, py, r, 0, Math.PI * 2);
         ctx.fill();
       }
     }
 
-    /*----------------------------------------------------
-      2. Initialize Stars
-    ----------------------------------------------------*/
-    function initStars() {
-      const count = parseInt(getComputedStyle(document.documentElement)
-                    .getPropertyValue('--star-count')); /* Retrieve CSS var  [oai_citation:65‡freefrontend.com](https://freefrontend.com/css-3d-examples/?utm_source=chatgpt.com) */
-      stars = [];
-      for (let i = 0; i < count; i++) {
-        stars.push(new Star());
+    class Asteroid {
+      constructor() {
+        this.reset();
+        this.shape = this.generateShape();
+      }
+      reset() {
+        this.x = (Math.random() - 0.5) * canvas.width;
+        this.y = (Math.random() - 0.5) * canvas.height;
+        this.z = Math.random() * canvas.width;
+        this.size = 20 + Math.random() * 30;
+      }
+      generateShape() {
+        const points = [];
+        const verts = 8 + Math.floor(Math.random() * 5);
+        for (let i = 0; i < verts; i++) {
+          const angle = (i / verts) * Math.PI * 2;
+          const radius = this.size * (0.7 + Math.random() * 0.3);
+          points.push({
+            x: Math.cos(angle) * radius,
+            y: Math.sin(angle) * radius
+          });
+        }
+        return points;
+      }
+      update() {
+        this.z -= 2;
+        if (this.z <= 0) {
+          this.reset();
+          this.shape = this.generateShape();
+        }
+      }
+      draw() {
+        const f = 300 / this.z;
+        const px = this.x * f + canvas.width / 2;
+        const py = this.y * f + canvas.height / 2;
+        const scale = f;
+        ctx.save();
+        ctx.translate(px, py);
+        const opacity = Math.max(0, Math.min(1, (canvas.width - this.z) / canvas.width));
+        ctx.fillStyle = `rgba(136,136,136,${opacity})`;
+        ctx.beginPath();
+        this.shape.forEach((p, i) => {
+          const sx = p.x * scale;
+          const sy = p.y * scale;
+          if (i === 0) ctx.moveTo(sx, sy);
+          else ctx.lineTo(sx, sy);
+        });
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
       }
     }
-    initStars(); // Build initial star array  [oai_citation:66‡divinectorweb.com](https://www.divinectorweb.com/2024/04/starfield-animation-vanilla-javascript.html?utm_source=chatgpt.com) [oai_citation:67‡github.com](https://github.com/mcgallag/starfield?utm_source=chatgpt.com)
 
-    /*----------------------------------------------------
-      3. Animation Loop
-    ----------------------------------------------------*/
+    function initScene() {
+      const starCount = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--star-count'));
+      for (let i = 0; i < starCount; i++) {
+        stars.push(new Star());
+      }
+      const asteroidCount = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--asteroid-count'));
+      for (let i = 0; i < asteroidCount; i++) {
+        asteroids.push(new Asteroid());
+      }
+    }
+
     function animate() {
-      const w = canvas.width;
-      const h = canvas.height;
-      /* Draw semi-transparent overlay for motion trails  [oai_citation:68‡kirupa.com](https://www.kirupa.com/animations/animated_3d_starfield_effect.htm?utm_source=chatgpt.com) */
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-      ctx.fillRect(0, 0, w, h);
-
-      stars.forEach(star => {
-        star.update();
-        star.draw();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach(s => {
+        s.update();
+        s.draw();
+      });
+      asteroids.forEach(a => {
+        a.update();
+        a.draw();
       });
       requestAnimationFrame(animate);
     }
-    animate(); // Commence animation  [oai_citation:69‡divinectorweb.com](https://www.divinectorweb.com/2024/04/starfield-animation-vanilla-javascript.html?utm_source=chatgpt.com)
 
-    /*----------------------------------------------------
-      4. Populate CSS 3D Stars
-    ----------------------------------------------------*/
-    function createCSSStars() {
-      const starsContainer = document.querySelector('.stars-3d');
-      const starCount3D = 100; /* Number of CSS stars  [oai_citation:70‡jsfiddle.net](https://jsfiddle.net/s_light/02pftd9h/?utm_source=chatgpt.com) */
-      for (let i = 0; i < starCount3D; i++) {
-        const starEl = document.createElement('div');
-        starEl.className = 'star';
-        const x = Math.random() * 100; /* Percent for left/top  [oai_citation:71‡jsfiddle.net](https://jsfiddle.net/s_light/02pftd9h/?utm_source=chatgpt.com) */
+    initScene();
+    animate();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const layer = document.getElementById('stars-layer');
+      const total = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--parallax-star-count'));
+      for (let i = 0; i < total; i++) {
+        const star = document.createElement('div');
+        star.className = 'star-parallax';
+        const x = Math.random() * 100;
         const y = Math.random() * 100;
-        const z = 50 + Math.random() * 450; /* Depth in px  [oai_citation:72‡jsfiddle.net](https://jsfiddle.net/s_light/02pftd9h/?utm_source=chatgpt.com) [oai_citation:73‡codepen.io](https://codepen.io/keithclark/pen/JjWyBb?utm_source=chatgpt.com) */
-        starEl.style.setProperty('--x', `${x}%`);
-        starEl.style.setProperty('--y', `${y}%`);
-        starEl.style.setProperty('--z', `${z}px`);
-        starsContainer.appendChild(starEl);
+        const z = (Math.random() * 1000) - 500;
+        const rand = Math.random();
+        const randAlpha = 0.5 + Math.random() * 0.5;
+        star.style.setProperty('--x', `${x}%`);
+        star.style.setProperty('--y', `${y}%`);
+        star.style.setProperty('--z', `${z}px`);
+        star.style.setProperty('--rand', rand);
+        star.style.setProperty('--rand-alpha', randAlpha);
+        layer.appendChild(star);
       }
-    }
-    createCSSStars(); // Launch CSS star creation  [oai_citation:74‡jsfiddle.net](https://jsfiddle.net/s_light/02pftd9h/?utm_source=chatgpt.com)
-
-    /*----------------------------------------------------
-      5. Logo 3D Interaction
-    ----------------------------------------------------*/
-    const logoWrapper = document.querySelector('.logo-wrapper');
-    const logoEl = document.querySelector('.logo');
-
-    logoWrapper.addEventListener('mousemove', (e) => {
-      const rect = logoWrapper.getBoundingClientRect();
-      const tx = e.clientX - (rect.left + rect.width / 2);
-      const ty = e.clientY - (rect.top + rect.height / 2);
-      const rotateY = (tx / rect.width) * 30; // ±15°  [oai_citation:75‡github.com](https://github.com/AnnikaV9/starfield.js/?utm_source=chatgpt.com) [oai_citation:76‡jsfiddle.net](https://jsfiddle.net/s_light/02pftd9h/?utm_source=chatgpt.com)
-      const rotateX = -(ty / rect.height) * 30;
-      logoEl.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
     });
 
-    logoWrapper.addEventListener('mouseleave', () => {
-      logoEl.style.transform = 'rotateX(0deg) rotateY(0deg)'; /* Reset  [oai_citation:77‡github.com](https://github.com/AnnikaV9/starfield.js/?utm_source=chatgpt.com) [oai_citation:78‡jsfiddle.net](https://jsfiddle.net/s_light/02pftd9h/?utm_source=chatgpt.com) */
+    const logoEl = document.querySelector('.logo');
+    document.addEventListener('mousemove', e => {
+      const tx = e.clientX - window.innerWidth / 2;
+      const ty = e.clientY - window.innerHeight / 2;
+      const rotateY = (tx / window.innerWidth) * 30;
+      const rotateX = -(ty / window.innerHeight) * 30;
+      logoEl.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    });
+    document.addEventListener('mouseleave', () => {
+      logoEl.style.transform = 'rotateX(0deg) rotateY(0deg)';
     });
   </script>
 </body>
